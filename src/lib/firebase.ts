@@ -1,4 +1,5 @@
 import { initializeApp } from 'firebase/app';
+import { Timestamp } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -9,4 +10,8 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
+type WithId<T> = T & { id: string };
+
 initializeApp(firebaseConfig);
+export type { WithId };
+export { Timestamp };
