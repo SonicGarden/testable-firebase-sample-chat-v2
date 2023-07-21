@@ -1,6 +1,16 @@
-import { ReactNode, createContext, useContext } from 'react';
+import {
+  ReactNode,
+  createContext,
+  useContext,
+  useCallback,
+} from 'react';
+import {
+  User,
+  signInGoogleWithPopup,
+  signOut,
+} from '@/lib/firebase';
+import { getUser, addUser } from '@/lib/user';
 import { useAuthState } from '@/hooks/useAuthState';
-import type { User } from 'firebase/auth';
 
 type AuthContextValue = {
   currentUser: User | null | undefined;
@@ -26,5 +36,16 @@ export const AuthProvider = ({
 export const useAuth = () => {
   const { currentUser } = useContext(AuthContext);
 
-  return { currentUser };
+  const signInWithGoogle = useCallback(async () => {
+    try {
+      const { user } = await signInGoogleWithPopup();
+      const { isExist } = await getUser(user.uid);
+      if (!isExist) await addUser(user);
+    } catch (e) {
+      console.error(e);
+      await signOut();
+    }
+  }, []);
+  
+  return { currentUser, signInWithGoogle, signOut };
 };
