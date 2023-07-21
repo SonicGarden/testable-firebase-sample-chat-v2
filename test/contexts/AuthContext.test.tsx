@@ -26,7 +26,7 @@ describe('AuthProvider', async () => {
     cleanup();
   });
 
-  it('コンテキストデータが取得できる', async () => {
+  it('認証済みの場合、コンシューマコンポーネントでコンテキストデータが取得できる', async () => {
     useAuthStateMock.mockReturnValue([{ uid: 'test-user-uid', displayName: 'てすたろう' } as User, false, undefined]);
     render(<TestComponent />);
     await waitFor(() => expect(screen.getByText('てすたろうでログインできました')).toBeTruthy());
