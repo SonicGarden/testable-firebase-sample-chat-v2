@@ -2,6 +2,7 @@ import { ReactNode, createContext, useContext, useCallback } from 'react';
 import { User, signInGoogleWithPopup, signOut } from '@/lib/firebase';
 import { getUser, addUser } from '@/lib/user';
 import { useAuthState } from '@/hooks/useAuthState';
+import { LoadingScreen } from '@/components/LoadingScreen';
 import { LoginScreen } from '@/components/LoginScreen';
 
 type AuthContextValue = {
@@ -13,8 +14,9 @@ export const AuthContext = createContext<AuthContextValue>({
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [currentUser] = useAuthState();
-  
+  const [currentUser, loading] = useAuthState();
+
+  if (loading) return <LoadingScreen />;
   if (!currentUser) return <LoginScreen />;
 
   return <AuthContext.Provider value={{ currentUser }}>{children}</AuthContext.Provider>;

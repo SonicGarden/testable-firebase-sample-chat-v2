@@ -13,7 +13,7 @@ describe('AuthProvider', async () => {
   const { useAuth, AuthProvider } = await import('@/contexts/AuthContext');
   const AuthedScreen = () => {
     const { currentUser } = useAuth();
-    return <div>‘${currentUser?.displayName}でログインできました‘</div>;
+    return <div>{`${currentUser?.displayName}でログインできました`}</div>;
   };
   const TestComponent = () => (
     <AuthProvider>
@@ -27,7 +27,7 @@ describe('AuthProvider', async () => {
   });
 
   it('コンテキストデータが取得できる', async () => {
-    useAuthStateMock.mockReturnValue([{ uid: 'test-user-uid', displayName: 'てすたろう' } as User, true, undefined]);
+    useAuthStateMock.mockReturnValue([{ uid: 'test-user-uid', displayName: 'てすたろう' } as User, false, undefined]);
     render(<TestComponent />);
     await waitFor(() => expect(screen.getByText('てすたろうでログインできました')).toBeTruthy());
   });
