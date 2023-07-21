@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "deploy": "yarn build && firebase deploy --except functions",
     "test": "vitest run",
-    "emulators:start:firestore": "firebase emulators:start --project testable-firebase-test --only firestore"
+    "emulators:start:firestore": "firebase emulators:start --project testable-firebase-test --only firestore",
+    "emulators:test": "firebase emulators:exec --project testable-firebase-test --only firestore 'yarn test'"
   },
   "dependencies": {
     "firebase": "^10.1.0",
