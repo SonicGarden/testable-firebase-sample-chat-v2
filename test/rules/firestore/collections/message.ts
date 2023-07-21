@@ -7,7 +7,7 @@ import firebase from 'firebase/compat/app';
 import {
   getTestEnv,
   setCollection,
-} from '@/../test/rules/firestore/utils';
+} from '../../../utils';
 import { userFactory } from '@/../test/factories/user';
 import { messageFactory } from '@/../test/factories/message';
 const user = userFactory.build({ id: 'user-id' });
