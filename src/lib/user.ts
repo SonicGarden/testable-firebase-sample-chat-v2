@@ -4,9 +4,8 @@ import {
   doc,
   getDoc,
   setDoc,
-  serverTimestamp,
 } from 'firebase/firestore';
-import { getConverter } from '@/lib/firebase';
+import { getConverter, serverTimestamp } from '@/lib/firebase';
 import type { UserDocumentData } from '@/types/user';
 
 export const usersRef = () => collection(
