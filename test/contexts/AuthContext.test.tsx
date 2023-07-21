@@ -29,19 +29,19 @@ describe('AuthProvider', async () => {
   it('コンテキストデータが取得できる', async () => {
     useAuthStateMock.mockReturnValue([{ uid: 'test-user-uid', displayName: 'てすたろう' } as User, true, undefined]);
     render(<TestComponent />);
-    waitFor(() => expect(screen.getByText('てすたろうでログインできました')).toBeTruthy());
+    await waitFor(() => expect(screen.getByText('てすたろうでログインできました')).toBeTruthy());
   });
 
   it('未認証の場合、ログイン画面が表示される', async () => {
     useAuthStateMock.mockReturnValue([null, false, undefined]);
     render(<TestComponent />);
-    waitFor(() => expect(screen.getByText('ログインしてください')).toBeTruthy());
+    await waitFor(() => expect(screen.getByText('ログインしてください')).toBeTruthy());
   });
 
   it('ローディング中の場合、ローディング画面が表示される', async () => {
     useAuthStateMock.mockReturnValue([null, true, undefined]);
     render(<TestComponent />);
-    waitFor(() => expect(screen.getByText('loading...')).toBeTruthy());
+    await waitFor(() => expect(screen.getByText('loading...')).toBeTruthy());
   });
 });
 
