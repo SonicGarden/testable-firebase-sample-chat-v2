@@ -1,36 +1,23 @@
-import {
-  ReactNode,
-  createContext,
-  useContext,
-  useCallback,
-} from 'react';
-import {
-  User,
-  signInGoogleWithPopup,
-  signOut,
-} from '@/lib/firebase';
+import { ReactNode, createContext, useContext, useCallback } from 'react';
+import { User, signInGoogleWithPopup, signOut } from '@/lib/firebase';
 import { getUser, addUser } from '@/lib/user';
 import { useAuthState } from '@/hooks/useAuthState';
+import { LoginScreen } from '@/components/LoginScreen';
 
 type AuthContextValue = {
-  currentUser: User | null | undefined;
+  currentUser: User | null;
 };
 
 export const AuthContext = createContext<AuthContextValue>({
   currentUser: null,
 });
 
-export const AuthProvider = ({
-  children
-}: {
-  children: ReactNode;
-}) => {
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [currentUser] = useAuthState();
-  return (
-    <AuthContext.Provider value={{ currentUser }}>
-      {children}
-    </AuthContext.Provider>
-  );
+  
+  if (!currentUser) return <LoginScreen />;
+
+  return <AuthContext.Provider value={{ currentUser }}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {
@@ -46,6 +33,6 @@ export const useAuth = () => {
       await signOut();
     }
   }, []);
-  
+
   return { currentUser, signInWithGoogle, signOut };
 };

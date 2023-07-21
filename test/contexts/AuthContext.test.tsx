@@ -1,15 +1,6 @@
-import {
-  render,
-  cleanup,
-  screen,
-  waitFor,
-} from '@testing-library/react';
+import { render, cleanup, screen, waitFor } from '@testing-library/react';
 import type { User } from 'firebase/auth';
-import {
-  renderHook,
-  act as actHook,
-  cleanup as cleanupHook,
-} from '@testing-library/react-hooks';
+import { renderHook, act as actHook, cleanup as cleanupHook } from '@testing-library/react-hooks';
 
 const useAuthStateMock = vi.fn();
 vi.mock('@/hooks/useAuthState', () => {
@@ -19,14 +10,10 @@ vi.mock('@/hooks/useAuthState', () => {
 });
 
 describe('AuthProvider', async () => {
-  const { useAuth, AuthProvider } = await import(
-    '@/contexts/AuthContext'
-  );
+  const { useAuth, AuthProvider } = await import('@/contexts/AuthContext');
   const AuthedScreen = () => {
     const { currentUser } = useAuth();
-    return (
-      <div>‘${currentUser?.displayName}でログインできました‘</div>
-    );
+    return <div>‘${currentUser?.displayName}でログインできました‘</div>;
   };
   const TestComponent = () => (
     <AuthProvider>
@@ -40,17 +27,21 @@ describe('AuthProvider', async () => {
   });
 
   it('コンテキストデータが取得できる', async () => {
-    useAuthStateMock.mockReturnValue([
-      { uid: 'test-user-uid', displayName: 'てすたろう' } as User,
-      true,
-      undefined,
-    ]);
+    useAuthStateMock.mockReturnValue([{ uid: 'test-user-uid', displayName: 'てすたろう' } as User, true, undefined]);
     render(<TestComponent />);
-    waitFor(() =>
-      expect(
-        screen.getByText('てすたろうでログインできました')
-      ).toBeTruthy()
-    );
+    waitFor(() => expect(screen.getByText('てすたろうでログインできました')).toBeTruthy());
+  });
+
+  it('未認証の場合、ログイン画面が表示される', async () => {
+    useAuthStateMock.mockReturnValue([null, false, undefined]);
+    render(<TestComponent />);
+    waitFor(() => expect(screen.getByText('ログインしてください')).toBeTruthy());
+  });
+
+  it('ローディング中の場合、ローディング画面が表示される', async () => {
+    useAuthStateMock.mockReturnValue([null, true, undefined]);
+    render(<TestComponent />);
+    waitFor(() => expect(screen.getByText('loading...')).toBeTruthy());
   });
 });
 
@@ -66,9 +57,7 @@ vi.mock('@/lib/user', () => {
 const signInGoogleWithPopupMock = vi.fn();
 const signOutMock = vi.fn();
 vi.mock('@/lib/firebase', async () => {
-  const firebase = await vi.importActual<object>(
-    '@/lib/firebase'
-  );
+  const firebase = await vi.importActual<object>('@/lib/firebase');
   return {
     ...firebase,
     signInGoogleWithPopup: signInGoogleWithPopupMock,
@@ -78,7 +67,7 @@ vi.mock('@/lib/firebase', async () => {
 
 describe('useAuth', async () => {
   const { useAuth } = await import('@/contexts/AuthContext');
-   afterEach(async () => {
+  afterEach(async () => {
     vi.resetAllMocks();
     await cleanupHook();
   });
@@ -90,7 +79,7 @@ describe('useAuth', async () => {
       user: {
         uid: 'test-uid',
         displayName: 'てすたろう',
-        photoURL: null
+        photoURL: null,
       },
     });
     getUserMock.mockResolvedValue({ isExist: false });
@@ -101,7 +90,7 @@ describe('useAuth', async () => {
     expect(addUserMock).toBeCalledWith({
       uid: 'test-uid',
       displayName: 'てすたろう',
-      photoURL: null
+      photoURL: null,
     });
   });
 
@@ -112,7 +101,7 @@ describe('useAuth', async () => {
       user: {
         uid: 'test-uid',
         displayName: 'てすたろう',
-        photoURL: null
+        photoURL: null,
       },
     });
     getUserMock.mockResolvedValue({ isExist: true });
@@ -130,7 +119,7 @@ describe('useAuth', async () => {
       user: {
         uid: 'test-uid',
         displayName: 'てすたろう',
-        photoURL: null
+        photoURL: null,
       },
     });
     getUserMock.mockRejectedValue('error');
