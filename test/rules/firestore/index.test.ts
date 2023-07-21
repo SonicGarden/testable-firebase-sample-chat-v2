@@ -1,6 +1,7 @@
+import { usersTest } from './collections/user';
 import { initializeTestEnvironment, getTestEnv } from './utils';
 
-process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8080';
+process.env.FIRESTORE_EMULATOR_HOST = '127.0.0.1:8080';
 
 describe('firestore.rules', () => {
   beforeAll(async () => {
@@ -14,5 +15,6 @@ describe('firestore.rules', () => {
   afterEach(async () => {
     await getTestEnv().clearFirestore();
   });
-  // ここに実際のテストを追加します。
+
+  usersTest();
 });
