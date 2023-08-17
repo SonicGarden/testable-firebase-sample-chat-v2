@@ -8,9 +8,10 @@ const sender = userFactory.build({
   name: 'テストユーザー',
   photoUrl: 'user-photo-url',
 });
-vi.mock('@/context/UsersContext', () => {
+const useUsersMock = vi.fn();
+vi.mock('@/contexts/UsersContext', () => {
   return {
-    useUsers: { usersById: { 'user-id': [sender] } },
+    useUsers: useUsersMock,
   };
 });
 
@@ -21,94 +22,115 @@ vi.mock('@/hooks/useBlob', () => {
   };
 });
 
-describe('Message', async () => {
+describe.only('Message', async () => {
   const { Message } = await import('@/components/Message');
 
-  afterEach(() => cleanup());
+  afterEach(() => {
+    vi.clearAllMocks();
+    cleanup();
+  });
 
-  describe('画像なしの場合', () => {
+  describe('loading中の場合', () => {
     const message = messageFactory.build({
       content: `テストのメッセージ`,
       senderId: 'user-id',
-      imagePath: null,
       createdAt: Timestamp.fromDate(new Date('2022-07-01 00:00:00+09:00')),
     });
 
     beforeEach(() => {
+      useUsersMock.mockReturnValue({ usersById: {}, loading: true });
       useBlobMock.mockReturnValue({});
     });
 
-    it('loading中はloadingメッセージが表示される', () => {
+    it('loading中はloadingメッセージが表示される', async () => {
       render(<Message message={message} />);
-      expect(screen.getByText('loading...')).toBeTruthy();
-    });
-
-    it('アイコン画像が表示される', () => {
-      render(<Message message={message} />);
-      waitFor(() => expect(screen.getByRole('img').getAttribute('src')).toBe('user-photo-url'));
-    });
-
-    it('送信者の名前が表示される', () => {
-      render(<Message message={message} />);
-      waitFor(() => expect(screen.getByText('テストユーザー')).toBeTruthy());
-    });
-
-    it('送信時間が表示される', () => {
-      render(<Message message={message} />);
-      waitFor(() => expect(screen.getByText('2022-07-01 00:00')).toBeTruthy());
-    });
-
-    it('メッセージが表示される', () => {
-      render(<Message message={message} />);
-      waitFor(() => expect(screen.getByText('テストのメッセージ')).toBeTruthy());
-    });
-
-    it('画像は表示されない', () => {
-      render(<Message message={message} />);
-      waitFor(() => expect(screen.getByText('message-image')).toBeUndefined());
+      await waitFor(() => expect(screen.getByText('loading...')).toBeTruthy());
     });
   });
 
-  describe('画像ありの場合', () => {
-    const message = messageFactory.build({
-      content: `テストのメッセージ`,
-      senderId: 'user-id',
-      imagePath: 'image-storage-path',
-      createdAt: Timestamp.fromDate(new Date('2022-07-01 00:00:00+09:00')),
-    });
-
+  describe('loading済みの場合', () => {
     beforeEach(() => {
-      useBlobMock.mockReturnValue({ url: 'message-image-url' });
+      useUsersMock.mockReturnValue({ usersById: { 'user-id': sender }, loading: false });
     });
 
-    it('loading中はloadingメッセージが表示される', () => {
-      render(<Message message={message} />);
-      expect(screen.getByText('loading...')).toBeTruthy();
+    describe('画像なしの場合', () => {
+      const message = messageFactory.build({
+        content: `テストのメッセージ`,
+        senderId: 'user-id',
+        imagePath: null,
+        createdAt: Timestamp.fromDate(new Date('2022-07-01 00:00:00+09:00')),
+      });
+
+      beforeEach(() => {
+        useBlobMock.mockReturnValue({});
+      });
+
+      it('アイコン画像が表示される', async () => {
+        render(<Message message={message} />);
+        await waitFor(() => expect(screen.getByRole('img').getAttribute('src')).toBe('user-photo-url'));
+      });
+
+      it('送信者の名前が表示される', async () => {
+        render(<Message message={message} />);
+        await waitFor(() => expect(screen.getByText('テストユーザー')).toBeTruthy());
+      });
+
+      it('送信時間が表示される', async () => {
+        render(<Message message={message} />);
+        await waitFor(() => expect(screen.getByText('2022-07-01 00:00')).toBeTruthy());
+      });
+
+      it('メッセージが表示される', async () => {
+        render(<Message message={message} />);
+        await waitFor(() => expect(screen.getByText('テストのメッセージ')).toBeTruthy());
+      });
+
+      it('画像は表示されない', async () => {
+        render(<Message message={message} />);
+        await waitFor(() => expect(screen.queryByRole('img', { name: 'message-image' })).toBeNull());
+      });
     });
 
-    it('アイコン画像が表示される', () => {
-      render(<Message message={message} />);
-      waitFor(() => expect(screen.getByRole('img')).toHaveAttribute('src', 'user-photo-url'));
-    });
+    describe('画像ありの場合', () => {
+      const message = messageFactory.build({
+        content: `テストのメッセージ`,
+        senderId: 'user-id',
+        imagePath: 'image-storage-path',
+        createdAt: Timestamp.fromDate(new Date('2022-07-01 00:00:00+09:00')),
+      });
 
-    it('送信者の名前が表示される', () => {
-      render(<Message message={message} />);
-      waitFor(() => expect(screen.getByText('テストユーザー')).toBeTruthy());
-    });
+      beforeEach(() => {
+        useBlobMock.mockReturnValue({ url: 'message-image-url' });
+      });
 
-    it('送信時間が表示される', () => {
-      render(<Message message={message} />);
-      waitFor(() => expect(screen.getByText('2022-07-01 00:00')).toBeTruthy());
-    });
+      it('アイコン画像が表示される', async () => {
+        render(<Message message={message} />);
+        await waitFor(() =>
+          expect(screen.getByRole('img', { name: 'user-icon' })).toHaveAttribute('src', 'user-photo-url'),
+        );
+      });
 
-    it('メッセージが表示される', () => {
-      render(<Message message={message} />);
-      waitFor(() => expect(screen.getByText('テストのメッセージ')).toBeTruthy());
-    });
+      it('送信者の名前が表示される', async () => {
+        render(<Message message={message} />);
+        await waitFor(() => expect(screen.getByText('テストユーザー')).toBeTruthy());
+      });
 
-    it('画像が表示される', () => {
-      render(<Message message={message} />);
-      waitFor(() => expect(screen.getByText('message-image')).toHaveAttribute('src', 'message-image-url'));
+      it('送信時間が表示される', async () => {
+        render(<Message message={message} />);
+        await waitFor(() => expect(screen.getByText('2022-07-01 00:00')).toBeTruthy());
+      });
+
+      it('メッセージが表示される', async () => {
+        render(<Message message={message} />);
+        await waitFor(() => expect(screen.getByText('テストのメッセージ')).toBeTruthy());
+      });
+
+      it('画像が表示される', async () => {
+        render(<Message message={message} />);
+        await waitFor(() =>
+          expect(screen.getByRole('img', { name: 'message-image' })).toHaveAttribute('src', 'message-image-url'),
+        );
+      });
     });
   });
 });

@@ -15,12 +15,12 @@ export const Message = ({ message }: { message: MessageType }) => {
   return (
     <div>
       <div>
-        <img src={sender?.photoUrl || nonameIcon} />
+        <img src={sender?.photoUrl || nonameIcon} aria-label='user-icon' />
         <span>{sender?.name || '名無しさん'}</span>
         <span>{format(message.createdAt.toDate(), 'yyyy-MM-dd HH:mm')}</span>
       </div>
       <p>{message.content}</p>
-      {url && <img alt='message-image' src={url} />}
+      {url && <img alt='message-image' aria-label='message-image' src={url} />}
     </div>
   );
 };

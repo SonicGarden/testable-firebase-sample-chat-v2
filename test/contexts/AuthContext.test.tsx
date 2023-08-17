@@ -22,7 +22,7 @@ describe('AuthProvider', async () => {
   );
 
   afterEach(() => {
-    vi.resetAllMocks();
+    vi.clearAllMocks();
     cleanup();
   });
 
@@ -68,7 +68,7 @@ vi.mock('@/lib/firebase', async () => {
 describe('useAuth', async () => {
   const { useAuth } = await import('@/contexts/AuthContext');
   afterEach(async () => {
-    vi.resetAllMocks();
+    vi.clearAllMocks();
     await cleanupHook();
   });
 
