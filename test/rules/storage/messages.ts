@@ -1,4 +1,3 @@
-// @vitest-environment node
 import { assertSucceeds, assertFails, RulesTestEnvironment } from '@firebase/rules-unit-testing';
 import { ref, uploadBytes, getBytes } from 'firebase/storage';
 import { readFileSync } from 'fs';

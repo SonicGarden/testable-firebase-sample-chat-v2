@@ -1,4 +1,3 @@
-// @vitest-environment node
 import { initializeStorageTestEnvironment, getTestEnv } from '@/../test/utils';
 import { messagesTest } from '@/../test/rules/storage/messages';
 
