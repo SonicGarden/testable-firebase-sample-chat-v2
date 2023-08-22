@@ -30,7 +30,7 @@ jobs:
         run: yarn emulators:start &
 
       - name: エミュレータの起動待機...
-        run: sleep 10
+        run: sleep 30
 
       - name: テスト実行
         run: yarn test
