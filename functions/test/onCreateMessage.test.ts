@@ -36,7 +36,7 @@ vi.mock('../src/lib/userSecret', () => {
 describe('onCreateMessage', async () => {
   const { onCreateMessage } = await import('../src/index');
 
-  it('プッシュ通知が送信される', async () => {
+  it('送信者以外にプッシュ通知が送信される', async () => {
     getCollectionDataMock.mockResolvedValue([
       { id: 'user-id-1', fcmToken: 'token-1' },
       { id: 'user-id-2', fcmToken: 'token-2' },
@@ -54,7 +54,7 @@ describe('onCreateMessage', async () => {
     const wrappedOnCreateMessage = wrap(onCreateMessage);
     await wrappedOnCreateMessage(snapshot);
 
-    expect(messagingSendMock).toBeCalledTimes(3);
+    expect(messagingSendMock).toBeCalledTimes(2);
     expect(messagingSendMock).toHaveBeenNthCalledWith(1, {
       token: 'token-1',
       notification: {
@@ -64,13 +64,6 @@ describe('onCreateMessage', async () => {
     });
     expect(messagingSendMock).toHaveBeenNthCalledWith(2, {
       token: 'token-2',
-      notification: {
-        title: 'てすたろうさんからメッセージが届きました',
-        body: 'テストメッセージ',
-      },
-    });
-    expect(messagingSendMock).toHaveBeenNthCalledWith(3, {
-      token: 'token-sender',
       notification: {
         title: 'てすたろうさんからメッセージが届きました',
         body: 'テストメッセージ',
