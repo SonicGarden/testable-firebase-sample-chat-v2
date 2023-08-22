@@ -15,6 +15,7 @@ import {
   PartialWithFieldValue,
   serverTimestamp as _serverTimeStamp,
 } from 'firebase/firestore';
+import { getMessaging, getToken } from 'firebase/messaging';
 import { omit } from 'lodash-es';
 
 const firebaseConfig = {
@@ -51,6 +52,11 @@ const signOut = async () => _signOut(getAuth());
 
 const serverTimestamp = _serverTimeStamp as unknown as () => Timestamp;
 
+const getFcmToken = async () =>
+  getToken(getMessaging(), {
+    vapidKey: import.meta.env.VITE_FIREBASE_MESSAGING_VAPID_KEY,
+  });
+
 initializeApp(firebaseConfig);
 export type { User, WithId };
 export {
@@ -58,5 +64,6 @@ export {
   getConverter,
   serverTimestamp,
   signInGoogleWithPopup,
-  signOut
+  signOut,
+  getFcmToken
 };
