@@ -5,6 +5,7 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   signOut as _signOut,
+  connectAuthEmulator,
 } from 'firebase/auth';
 import {
   Timestamp,
@@ -14,6 +15,8 @@ import {
   FirestoreDataConverter,
   PartialWithFieldValue,
   serverTimestamp as _serverTimeStamp,
+  initializeFirestore,
+  connectFirestoreEmulator,
 } from 'firebase/firestore';
 import { getMessaging, getToken } from 'firebase/messaging';
 import { omit } from 'lodash-es';
@@ -29,19 +32,14 @@ const firebaseConfig = {
 
 type WithId<T> = T & { id: string };
 
-
 const getConverter = <T extends DocumentData>(): FirestoreDataConverter<WithId<T>> => ({
-  toFirestore: (
-    data: PartialWithFieldValue<WithId<T>>
-  ): DocumentData => {
+  toFirestore: (data: PartialWithFieldValue<WithId<T>>): DocumentData => {
     return omit(data, ['id']);
   },
-  fromFirestore: (
-    snapshot: QueryDocumentSnapshot<T>,
-    options: SnapshotOptions
-  ): WithId<T> => {
+  fromFirestore: (snapshot: QueryDocumentSnapshot<T>, options: SnapshotOptions): WithId<T> => {
     return { id: snapshot.id, ...snapshot.data(options) };
-}, });
+  },
+});
 
 const signInGoogleWithPopup = async () => {
   const provider = new GoogleAuthProvider();
@@ -57,13 +55,16 @@ const getFcmToken = async () =>
     vapidKey: import.meta.env.VITE_FIREBASE_MESSAGING_VAPID_KEY,
   });
 
-initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
+
+if (import.meta.env.VITE_EMULATORS === 'true') {
+  console.info('USE EMULATORS...');
+  connectAuthEmulator(getAuth(), 'http://127.0.0.1:9099');
+  const firestore = initializeFirestore(app, {
+    experimentalForceLongPolling: true,
+  });
+  connectFirestoreEmulator(firestore, '127.0.0.1', 8080);
+}
+
 export type { User, WithId };
-export {
-  Timestamp,
-  getConverter,
-  serverTimestamp,
-  signInGoogleWithPopup,
-  signOut,
-  getFcmToken
-};
+export { Timestamp, getConverter, serverTimestamp, signInGoogleWithPopup, signOut, getFcmToken };
