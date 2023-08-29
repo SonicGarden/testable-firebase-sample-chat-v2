@@ -1,5 +1,5 @@
 import { defineConfig } from 'cypress';
-import * as admin from 'firebase-admin';
+import admin from 'firebase-admin';
 import { plugin as cypressFirebasePlugin } from 'cypress-firebase';
 
 admin.initializeApp({
@@ -13,8 +13,8 @@ export default defineConfig({
     setupNodeEvents(on, config) {
       cypressFirebasePlugin(on, config, admin);
 
-      process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8080';
-      process.env.FIREBASE_AUTH_EMULATOR_HOST = 'localhost:9099';
+      process.env.FIRESTORE_EMULATOR_HOST = '127.0.0.1:8080';
+      process.env.FIREBASE_AUTH_EMULATOR_HOST = '127.0.0.1:9099';
 
       on('task', {
         async 'create:user'(user: {

@@ -14,7 +14,7 @@
     "test:e2e": "yarn cypress run",
     "emulators:start": "firebase emulators:start --project testable-firebase-test --only hosting,auth,firestore,storage",
     "emulators:test": "firebase emulators:exec --project testable-firebase-test --only firestore,storage 'yarn test'",
-    "emulators:e2e": "yarn build:test && firebase emulators:exec --only hosting,auth,firestore,storage 'yarn test:e2e'"
+    "emulators:e2e": "yarn build:test && firebase emulators:exec --project testable-firebase-sample-chat-test --only hosting,auth,firestore,storage 'yarn test:e2e'"
   },
   "dependencies": {
     "date-fns": "^2.30.0",
