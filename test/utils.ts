@@ -8,9 +8,9 @@ import { getConverter, WithId } from '@/lib/firebase';
 import { DocumentData } from 'firebase/firestore';
 
 let testEnv: RulesTestEnvironment;
-export const initializeTestEnvironment = async () => {
+export const initializeTestEnvironment = async (projectId: string) => {
   testEnv = await _initializeTestEnvironment({
-    projectId: 'testable-firebase-test',
+    projectId,
     firestore: {
       rules: readFileSync('firestore.rules', 'utf8'),
     },
