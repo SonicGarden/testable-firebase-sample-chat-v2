@@ -9,6 +9,7 @@ import { DocumentData } from 'firebase/firestore';
 
 let testEnv: RulesTestEnvironment;
 export const initializeTestEnvironment = async (projectId: string) => {
+  process.env.FIRESTORE_EMULATOR_HOST = '127.0.0.1:8080';
   testEnv = await _initializeTestEnvironment({
     projectId,
     firestore: {

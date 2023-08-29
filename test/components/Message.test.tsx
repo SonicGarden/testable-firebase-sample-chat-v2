@@ -8,21 +8,20 @@ const sender = userFactory.build({
   name: 'テストユーザー',
   photoUrl: 'user-photo-url',
 });
-vi.mock('@/context/UsersContext', () => {
+const useUsersMock = vi.fn();
+
+vi.mock('@/contexts/UsersContext', () => {
   return {
-    useUsers: { usersById: { 'user-id': [sender] } },
+    useUsers: useUsersMock,
   };
 });
 
 describe('Message', async () => {
   const { Message } = await import('@/components/Message');
 
-  afterEach(() => cleanup());
-
-  vi.mock('@/context/UsersContext', () => {
-    return {
-      useUsers: { usersById: { 'user-id': [sender] } },
-    };
+  afterEach(() => {
+    vi.clearAllMocks();
+    cleanup();
   });
 
   const message = messageFactory.build({
@@ -31,28 +30,40 @@ describe('Message', async () => {
     createdAt: Timestamp.fromDate(new Date('2022-07-01 00:00:00+09:00')),
   });
 
-  it('loading中はloadingメッセージが表示される', () => {
-    render(<Message message={message} />);
-    expect(screen.getByText('loading...')).toBeTruthy();
+  describe('loading中の場合', () => {
+    beforeEach(() => {
+      useUsersMock.mockReturnValue({ usersById: {}, loading: true });
+    });
+
+    it('loading中はloadingメッセージが表示される', async () => {
+      render(<Message message={message} />);
+      await waitFor(() => expect(screen.getByText('loading...')).toBeTruthy());
+    });
   });
 
-  it('アイコン画像が表示される', () => {
-    render(<Message message={message} />);
-    waitFor(() => expect(screen.getByRole('img').getAttribute('src')).toBe('user-photo-url'));
-  });
+  describe('loading済みの場合', () => {
+    beforeEach(() => {
+      useUsersMock.mockReturnValue({ usersById: { 'user-id': sender }, loading: false });
+    });
 
-  it('送信者の名前が表示される', () => {
-    render(<Message message={message} />);
-    waitFor(() => expect(screen.getByText('テストユーザー')).toBeTruthy());
-  });
+    it('アイコン画像が表示される', async () => {
+      render(<Message message={message} />);
+      await waitFor(() => expect(screen.getByRole('img').getAttribute('src')).toBe('user-photo-url'));
+    });
 
-  it('送信時間が表示される', () => {
-    render(<Message message={message} />);
-    waitFor(() => expect(screen.getByText('2022-07-01 00:00')).toBeTruthy());
-  });
+    it('送信者の名前が表示される', async () => {
+      render(<Message message={message} />);
+      await waitFor(() => expect(screen.getByText('テストユーザー')).toBeTruthy());
+    });
 
-  it('メッセージが表示される', () => {
-    render(<Message message={message} />);
-    waitFor(() => expect(screen.getByText('テストのメッセージ')).toBeTruthy());
+    it('送信時間が表示される', async () => {
+      render(<Message message={message} />);
+      await waitFor(() => expect(screen.getByText('2022-07-01 00:00')).toBeTruthy());
+    });
+
+    it('メッセージが表示される', async () => {
+      render(<Message message={message} />);
+      await waitFor(() => expect(screen.getByText('テストのメッセージ')).toBeTruthy());
+    });
   });
 });
