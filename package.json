@@ -10,9 +10,11 @@
     "preview": "vite preview",
     "deploy": "yarn build && firebase deploy --except functions",
     "test": "vitest run",
-    "emulators:start:firestore": "firebase emulators:start --project testable-firebase-test --only firestore"
+    "emulators:start:firestore": "firebase emulators:start --project testable-firebase-test --only firestore",
+    "emulators:test": "firebase emulators:exec --project testable-firebase-test --only firestore 'yarn test'"
   },
   "dependencies": {
+    "date-fns": "^2.30.0",
     "firebase": "^10.1.0",
     "lodash-es": "^4.17.21",
     "react": "^18.2.0",
