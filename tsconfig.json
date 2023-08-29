@@ -27,6 +27,6 @@
     },
     "types": ["vitest/globals"]
   },
-  "include": ["src", "test", "./vitest.setup.ts"],
+  "include": ["src", "test", "./vitest.setup.ts", "./cypress.d.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
