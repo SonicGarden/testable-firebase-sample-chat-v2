@@ -22,7 +22,7 @@ vi.mock('@/hooks/useBlob', () => {
   };
 });
 
-describe.only('Message', async () => {
+describe('Message', async () => {
   const { Message } = await import('@/components/Message');
 
   afterEach(() => {
