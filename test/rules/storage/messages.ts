@@ -47,7 +47,7 @@ export const messagesTest = () => {
         await assertFails(
           uploadBytes(newStorageRef, file, {
             customMetadata: { ownerId: other.id },
-          }),
+          })
         );
       });
     });
@@ -66,11 +66,11 @@ export const messagesTest = () => {
         });
 
         it('書き込みできる', async () => {
-          const newStorageRef = ref(storage, 'messages/new-user-message-id/sample.png');
+          const newStorageRef = ref(storage, 'messages/new-message-id/sample.png');
           await assertSucceeds(
             uploadBytes(newStorageRef, file, {
               customMetadata: { ownerId: user.id },
-            }),
+            })
           );
         });
 
@@ -79,7 +79,7 @@ export const messagesTest = () => {
           await assertSucceeds(
             uploadBytes(storageRef, file, {
               customMetadata: { ownerId: user.id },
-            }),
+            })
           );
         });
       });
@@ -95,11 +95,11 @@ export const messagesTest = () => {
         });
 
         it('書き込みできない', async () => {
-          const newStorageRef = ref(storage, 'messages/new-other-message-id/sample.png');
+          const newStorageRef = ref(storage, 'messages/new-message-id/sample.png');
           await assertFails(
             uploadBytes(newStorageRef, file, {
               customMetadata: { ownerId: other.id },
-            }),
+            })
           );
         });
 
@@ -108,7 +108,7 @@ export const messagesTest = () => {
           await assertFails(
             uploadBytes(storageRef, file, {
               customMetadata: { ownerId: other.id },
-            }),
+            })
           );
         });
       });

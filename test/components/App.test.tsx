@@ -1,11 +1,19 @@
 import { render, cleanup, screen } from '@testing-library/react';
+import { App } from '@/components/App';
 
-vi.mock('@/components/Messages', () => ({ Messages: () => <div>Messages</div> }));
-vi.mock('@/components/MessageForm', () => ({ MessageForm: () => <div>MessageForm</div> }));
+vi.mock('@/components/MessageForm', () => {
+  return {
+    MessageForm: () => <div>MessageForm</div>,
+  };
+});
 
-describe('App', async () => {
-  const { App } = await import('@/components/App');
+vi.mock('@/components/Messages', () => {
+  return {
+    Messages: () => <div>Messages</div>,
+  };
+});
 
+describe('App', () => {
   afterEach(() => {
     vi.clearAllMocks();
     cleanup();

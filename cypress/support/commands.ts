@@ -35,11 +35,3 @@
 //     }
 //   }
 // }
-
-Cypress.Commands.add('teardown', () => {
-  cy.logout();
-  cy.exec(
-    `curl -v -X DELETE "http://127.0.0.1:8080/emulator/v1/projects/testable-firebase-sample-chat-test/databases/(default)/documents"`,
-  );
-  cy.exec(`curl -v -X DELETE "http://127.0.0.1:9099/emulator/v1/projects/testable-firebase-sample-chat-test/accounts"`);
-});

@@ -1,8 +1,4 @@
-import {
-  assertSucceeds,
-  assertFails,
-  RulesTestEnvironment,
-} from '@firebase/rules-unit-testing';
+import { assertSucceeds, assertFails, RulesTestEnvironment } from '@firebase/rules-unit-testing';
 import firebase from 'firebase/compat/app';
 import { getTestEnv, setCollection } from '@/../test/utils';
 import { userSecretFactory } from '@/../test/factories/userSecret';
@@ -19,10 +15,7 @@ export const userSecretsTest = () => {
       env = getTestEnv();
       await env.withSecurityRulesDisabled(async (context) => {
         const adminDb = context.firestore();
-        await setCollection(
-          adminDb.collection('userSecrets'),
-          userSecrets
-        );
+        await setCollection(adminDb.collection('userSecrets'), userSecrets);
       });
     });
 
@@ -34,9 +27,7 @@ export const userSecretsTest = () => {
       });
 
       it('読み込みできない(get)', async () => {
-        const ref = db
-          .collection('userSecrets')
-          .doc(otherSecret.id);
+        const ref = db.collection('userSecrets').doc(otherSecret.id);
         await assertFails(ref.get());
       });
 
@@ -52,25 +43,19 @@ export const userSecretsTest = () => {
       });
 
       it('更新できない', async () => {
-        const ref = db
-          .collection('userSecrets')
-          .doc(otherSecret.id);
+        const ref = db.collection('userSecrets').doc(otherSecret.id);
         await assertFails(ref.update({ fcmToken: '違うトークン' }));
       });
 
       it('削除できない', async () => {
-        const ref = db
-          .collection('userSecrets')
-          .doc(otherSecret.id);
+        const ref = db.collection('userSecrets').doc(otherSecret.id);
         await assertFails(ref.delete());
       });
     });
 
     describe('認証済の場合', () => {
       it('一覧を読み込みできない(list)', async () => {
-        const db = env
-          .authenticatedContext(userSecret.id)
-          .firestore();
+        const db = env.authenticatedContext(userSecret.id).firestore();
         const ref = db.collection('userSecrets');
         await assertFails(ref.get());
       });
@@ -83,9 +68,7 @@ export const userSecretsTest = () => {
         });
 
         it('読み込みできる(get)', async () => {
-          const ref = db
-            .collection('userSecrets')
-            .doc(userSecret.id);
+          const ref = db.collection('userSecrets').doc(userSecret.id);
           await assertSucceeds(ref.get());
         });
 
@@ -93,28 +76,18 @@ export const userSecretsTest = () => {
           const newUserSecret = userSecretFactory.build({
             id: 'new-user-id',
           });
-          const db = env
-            .authenticatedContext(newUserSecret.id)
-            .firestore();
+          const db = env.authenticatedContext(newUserSecret.id).firestore();
           const ref = db.collection('userSecrets');
-          await assertSucceeds(
-            ref.doc(newUserSecret.id).set(newUserSecret)
-          );
+          await assertSucceeds(ref.doc(newUserSecret.id).set(newUserSecret));
         });
 
         it('更新できる', async () => {
-          const ref = db
-            .collection('userSecrets')
-            .doc(userSecret.id);
-          await assertSucceeds(
-            ref.update({ fcmToken: '違うトークン' })
-          );
+          const ref = db.collection('userSecrets').doc(userSecret.id);
+          await assertSucceeds(ref.update({ fcmToken: '違うトークン' }));
         });
 
         it('削除できる', async () => {
-          const ref = db
-            .collection('userSecrets')
-            .doc(userSecret.id);
+          const ref = db.collection('userSecrets').doc(userSecret.id);
           await assertSucceeds(ref.delete());
         });
       });
@@ -127,9 +100,7 @@ export const userSecretsTest = () => {
         });
 
         it('読み込みできない(get)', async () => {
-          const ref = db
-            .collection('userSecrets')
-            .doc(otherSecret.id);
+          const ref = db.collection('userSecrets').doc(otherSecret.id);
           await assertFails(ref.get());
         });
 
@@ -138,24 +109,16 @@ export const userSecretsTest = () => {
             id: 'new-user-id',
           });
           const ref = db.collection('userSecrets');
-          await assertFails(
-            ref.doc(newUserSecret.id).set(newUserSecret)
-          );
+          await assertFails(ref.doc(newUserSecret.id).set(newUserSecret));
         });
 
         it('更新できない', async () => {
-          const ref = db
-            .collection('userSecrets')
-            .doc(otherSecret.id);
-          await assertFails(
-            ref.update({ fcmToken: '違うトークン' })
-          );
+          const ref = db.collection('userSecrets').doc(otherSecret.id);
+          await assertFails(ref.update({ fcmToken: '違うトークン' }));
         });
 
         it('削除できない', async () => {
-          const ref = db
-            .collection('userSecrets')
-            .doc(otherSecret.id);
+          const ref = db.collection('userSecrets').doc(otherSecret.id);
           await assertFails(ref.delete());
         });
       });

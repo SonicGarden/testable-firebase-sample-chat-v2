@@ -1,11 +1,18 @@
-import { render, cleanup, screen, waitFor } from '@testing-library/react';
+import { render, cleanup, screen, waitFor, renderHook } from '@testing-library/react';
+import { act as actHook, cleanup as cleanupHook } from '@testing-library/react-hooks';
 import type { User } from 'firebase/auth';
-import { renderHook, act as actHook, cleanup as cleanupHook } from '@testing-library/react-hooks';
 
 const useAuthStateMock = vi.fn();
 vi.mock('@/hooks/useAuthState', () => {
   return {
     useAuthState: useAuthStateMock,
+  };
+});
+
+const setUserSecretMock = vi.fn();
+vi.mock('@/lib/userSecret', () => {
+  return {
+    setUserSecret: setUserSecretMock,
   };
 });
 
@@ -22,14 +29,14 @@ describe('AuthProvider', async () => {
   );
 
   afterEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
     cleanup();
   });
 
   it('認証済みの場合、コンシューマコンポーネントでコンテキストデータが取得できる', async () => {
     useAuthStateMock.mockReturnValue([{ uid: 'test-user-uid', displayName: 'てすたろう' } as User, false, undefined]);
     render(<TestComponent />);
-    await waitFor(() => expect(screen.getByText('てすたろうでログインできました')).toBeTruthy());
+    waitFor(() => expect(screen.getByText('てすたろうでログインできました')).toBeTruthy());
   });
 
   it('未認証の場合、ログイン画面が表示される', async () => {
@@ -54,16 +61,10 @@ vi.mock('@/lib/user', () => {
   };
 });
 
-const setUserSecretMock = vi.fn();
-vi.mock('@/lib/userSecret', () => {
-  return {
-    setUserSecret: setUserSecretMock,
-  };
-});
-
 const signInGoogleWithPopupMock = vi.fn();
 const signOutMock = vi.fn();
 const getFcmTokenMock = vi.fn();
+
 vi.mock('@/lib/firebase', async () => {
   const firebase = await vi.importActual<object>('@/lib/firebase');
   return {
@@ -76,31 +77,37 @@ vi.mock('@/lib/firebase', async () => {
 
 describe('useAuth', async () => {
   const { useAuth } = await import('@/contexts/AuthContext');
+
   afterEach(async () => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
     await cleanupHook();
   });
 
-  it('初めてのログインの場合、ユーザー情報が登録される', async () => {
-    const { result } = renderHook(() => useAuth());
+  describe('初めてのログインの場合', () => {
+    beforeEach(() => {
+      signInGoogleWithPopupMock.mockResolvedValue({
+        user: {
+          uid: 'test-uid',
+          displayName: 'てすたろう',
+          photoURL: null,
+        },
+      });
+      getUserMock.mockResolvedValue({ isExist: false });
+      getFcmTokenMock.mockResolvedValue('test-token');
+    });
 
-    signInGoogleWithPopupMock.mockResolvedValue({
-      user: {
+    it('ユーザ情報が登録される', async () => {
+      const { result } = renderHook(() => useAuth());
+
+      await actHook(async () => {
+        await result.current.signInWithGoogle();
+      });
+
+      expect(addUserMock).toBeCalledWith({
         uid: 'test-uid',
         displayName: 'てすたろう',
         photoURL: null,
-      },
-    });
-    getUserMock.mockResolvedValue({ isExist: false });
-    getFcmTokenMock.mockResolvedValue('test-token');
-    await actHook(async () => {
-      await result.current.signInWithGoogle();
-    });
-
-    expect(addUserMock).toBeCalledWith({
-      uid: 'test-uid',
-      displayName: 'てすたろう',
-      photoURL: null,
+      });
     });
 
     it('fcmTokenが登録される', async () => {
@@ -119,13 +126,16 @@ describe('useAuth', async () => {
   describe('二回目以降のログインの場合', () => {
     beforeEach(() => {
       signInGoogleWithPopupMock.mockResolvedValue({
-        user: { uid: 'test-uid', displayName: 'てすたろう', photoURL: null },
+        user: {
+          uid: 'test-uid',
+          displayName: 'てすたろう',
+          photoURL: null,
+        },
       });
       getUserMock.mockResolvedValue({ isExist: true });
       getFcmTokenMock.mockResolvedValue('test-token');
     });
-
-    it('ユーザー情報は登録されない', async () => {
+    it('ユーザ情報は登録されない', async () => {
       const { result } = renderHook(() => useAuth());
 
       await actHook(async () => {

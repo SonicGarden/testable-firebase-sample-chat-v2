@@ -5,9 +5,9 @@ import {
 import { readFileSync } from 'fs';
 import firebase from 'firebase/compat/app';
 import { getConverter, WithId } from '@/lib/firebase';
-import { DocumentData } from 'firebase/firestore';
 
 let testEnv: RulesTestEnvironment;
+
 export const initializeTestEnvironment = async (projectId: string) => {
   process.env.FIRESTORE_EMULATOR_HOST = '127.0.0.1:8080';
   testEnv = await _initializeTestEnvironment({
@@ -18,11 +18,7 @@ export const initializeTestEnvironment = async (projectId: string) => {
   });
 };
 
-// NOTE:
-// firestore.rulesを読み込んだ状態でfirestoreにデータが存在しない場合、
-// storageのwithSecurityRulesDisabledが効かないので、storageテストようにinitializeを分けている
 export const initializeStorageTestEnvironment = async (projectId: string) => {
-  process.env.FIRESTORE_EMULATOR_HOST = '127.0.0.1:8080';
   process.env.FIREBASE_STORAGE_EMULATOR_HOST = '127.0.0.1:9199';
   testEnv = await _initializeTestEnvironment({
     projectId,
@@ -33,7 +29,8 @@ export const initializeStorageTestEnvironment = async (projectId: string) => {
 };
 
 export const getTestEnv = () => testEnv;
-export const setCollection = <T extends DocumentData>(
+
+export const setCollection = <T extends firebase.firestore.DocumentData>(
   ref: firebase.firestore.CollectionReference,
-  instances: WithId<T>[],
+  instances: WithId<T>[]
 ) => Promise.all(instances.map((_) => ref.doc(_.id).set(getConverter<T>().toFirestore(_))));

@@ -1,5 +1,4 @@
 import firebaseFunctionsTest from 'firebase-functions-test';
-import { vi } from 'vitest';
 
 const { wrap, firestore } = firebaseFunctionsTest();
 const { makeDocumentSnapshot } = firestore;

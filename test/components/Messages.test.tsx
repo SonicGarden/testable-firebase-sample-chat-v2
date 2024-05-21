@@ -19,13 +19,12 @@ describe('Messages', async () => {
   const { Messages } = await import('@/components/Messages');
 
   afterEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
     cleanup();
   });
 
   it('ローディング中の場合、ローディング画面が表示される', async () => {
-    useCollectionDataMock.mockReturnValue([[], true, undefined,
-      undefined]);
+    useCollectionDataMock.mockReturnValue([[], true, undefined, undefined]);
     render(<Messages />);
     expect(screen.getByText('loading...')).toBeTruthy();
   });
@@ -46,7 +45,13 @@ describe('Messages', async () => {
       id: 'test-user-uid',
       name: 'てすたろう',
     });
-    useUsersMock.mockReturnValue({ users: [user], usersById: { [user.id]: user }, loading: false });
+    useUsersMock.mockReturnValue({
+      users: [user],
+      usersById: {
+        [user.id]: user,
+      },
+      loading: false,
+    });
 
     render(<Messages />);
     expect(screen.getByText('テストメッセージ')).toBeTruthy();

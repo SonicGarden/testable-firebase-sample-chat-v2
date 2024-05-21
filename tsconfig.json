@@ -20,13 +20,12 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
-    /* Custom */
     "baseUrl": "src",
     "paths": {
       "@/*": ["*"]
     },
     "types": ["vitest/globals"]
   },
-  "include": ["src", "test", "./vitest.setup.ts", "./cypress.d.ts"],
+  "include": ["src", "test", "./vitest.setup.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

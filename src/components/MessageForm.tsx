@@ -22,8 +22,8 @@ export const MessageForm = () => {
 
   return (
     <>
-      <input aria-label='content-input' type='text' value={content} onChange={handleChangeContent} />
-      <input aria-label='image-input' type='file' accept='image/*' ref={imageInput} />
+      <input aria-label="content-input" type="text" value={content} onChange={handleChangeContent} />
+      <input aria-label="image-input" type="file" accept="image/*" ref={imageInput} />
       <button onClick={handleClick} disabled={!content}>
         送信
       </button>

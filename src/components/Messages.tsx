@@ -8,11 +8,5 @@ export const Messages = () => {
 
   if (loading) return <LoadingScreen />;
 
-  return (
-    <div id='messages'>
-      {messages?.map((message) => (
-        <Message key={message.id} message={message} />
-      ))}
-    </div>
-  );
+  return <div>{messages?.map((message) => <Message key={message.id} message={message} />)}</div>;
 };

@@ -7,5 +7,4 @@ export type MessageDocumentData = {
   imagePath: string | null;
   senderId: string;
 };
-
 export type Message = WithId<MessageDocumentData>;

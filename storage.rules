@@ -1,22 +1,27 @@
 rules_version = '2';
+
+// Craft rules based on data in your Firestore database
+// allow write: if firestore.get(
+//    /databases/(default)/documents/users/$(request.auth.uid)).data.isAdmin;
 service firebase.storage {
   match /b/{bucket}/o {
-    function isLoggedIn() {
-      return request.auth != null;
-    }
-    function isOwn(uid) {
-      return isLoggedIn() && request.auth.uid == uid;
-    }
-    function isCreatedOwn() {
-      return resource == null && isOwn(request.resource.metadata.ownerId);
-    }
-    function isUpdatedOwn() {
-      return resource != null && isOwn(resource.metadata.ownerId);
-    }
+     function isLoggedIn() {
+       return request.auth != null;
+     }
+     function isOwn(uid) {
+       return isLoggedIn() && request.auth.uid == uid;
+     }
+     function isCreatedOwn() {
+       return isOwn(request.resource.metadata.ownerId);
+     }
+     function isUpdatedOwn() {
+       return isOwn(resource.metadata.ownerId);
+     }
 
-    match /messages/{messageId}/{fileName} {
-      allow read: if isLoggedIn();
-      allow write: if isCreatedOwn() || isUpdatedOwn();
-    }
+     match /messages/{messageId}/{fileName} {
+       allow read: if isLoggedIn();
+       allow create: if isCreatedOwn();
+       allow update: if isUpdatedOwn();
+     }
   }
 }

@@ -20,7 +20,7 @@ export const Message = ({ message }: { message: MessageType }) => {
         <span>{format(message.createdAt.toDate(), 'yyyy-MM-dd HH:mm')}</span>
       </div>
       <p>{message.content}</p>
-      {url && <img alt='message-image' aria-label='message-image' src={url} />}
+      {url && <img alt="message-image" aria-label='message-image' src={url} />}
     </div>
   );
 };
